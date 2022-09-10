@@ -23,3 +23,9 @@ def objectToJson(object):
 
 def jsonToDict(jsonString:str):
     return json.loads(jsonString)
+
+def readJsonFromFile(filePath:str):
+    fileHandler = open(filePath)
+    data = json.load(fileHandler)
+    fileHandler.close()
+    return data

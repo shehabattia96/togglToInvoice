@@ -1,0 +1,4 @@
+{
+    "apiEndpoint": "https://api.track.toggl.com/api/v9/",
+    "apiToken": "{TOKEN_HERE}"
+}

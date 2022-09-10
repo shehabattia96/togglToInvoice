@@ -3,6 +3,7 @@
 set -e
 
 SCRIPT_DIR="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )" # copypasta from https://stackoverflow.com/a/4774063/
+
 VENV_DIR="$SCRIPT_DIR/venv"
 
 
@@ -13,7 +14,3 @@ fi
 
 
 source "$VENV_DIR/Scripts/activate"
-
-
-# See "CLI Args" in fetchDataAndGenerateInvoice.py for info on args:
-python "$SCRIPT_DIR/fetchDataAndGenerateInvoice.py" $1
