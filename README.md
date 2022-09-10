@@ -4,7 +4,7 @@ Uses the [Toggl API](https://developers.track.toggl.com/docs/) to fetch workspac
 
 ## How to use
 
-1. Please update [configToggleApi.json](configToggleApi.json)'s missing fields.\
+1. Please clone and remove the `_` prefix from [_configToggleApi.json](_configToggleApi.json) so that it becomes [configToggleApi.json](configToggleApi.json) and update its missing fields.
    - Get API Token from here: [https://support.toggl.com/en/articles/3116844-where-is-my-api-key-located](https://support.toggl.com/en/articles/3116844-where-is-my-api-key-located).
 2. Follow the steps in [Development](#development) to set up virtual environment and install dependencies.
 3. Run `generateProjectsJson.sh > configProjects.json` (OR `generateProjectsJson.py > configProjects.json` if you're not using the venv) to create a dump of projects. WARNING: `>` will override the current file.
