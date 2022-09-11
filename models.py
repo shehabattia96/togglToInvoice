@@ -37,11 +37,13 @@ class InvoiceItem:
 class Company:
     def __init__(
         self,
+        clientId:str,
         name:str,
         address:str,
         cityCountryZipcode:str,
         phoneNumber:str
     ):
+        self.clientId = clientId
         self.name = name
         self.address = address
         self.cityCountryZipcode = cityCountryZipcode

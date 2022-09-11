@@ -1,5 +1,5 @@
 // This is a sample json
-// Run `generateProjectsJsonFromToggl.sh > configProjects.json` to fetch projects from Toggl
+// Please run `generateProjectsJsonFromToggl.sh > configProjects.json` to fetch projects from Toggl
 {
     "170841308": {
         "id": 170841308,

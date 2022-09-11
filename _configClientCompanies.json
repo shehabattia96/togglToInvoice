@@ -1,0 +1,26 @@
+// This is a sample json
+// Please rename a copy of this to configClientCompanies.json and fill in client and company data
+// Use id 0 for the FROM COMPANY field in invoice.
+{
+    "0": {
+        "clientId": 0,
+        "name": "My Name",
+        "address": "",
+        "cityCountryZipcode": "",
+        "phoneNumber": ""
+    },
+    "client1Id": {
+        "clientId": 1234,
+        "name": "Client 1 Name",
+        "address": "",
+        "cityCountryZipcode": "",
+        "phoneNumber": ""
+    },    
+    "client2Id": {
+        "clientId": 1235,
+        "name": "Client 2 Name",
+        "address": "",
+        "cityCountryZipcode": "",
+        "phoneNumber": ""
+    }
+}
