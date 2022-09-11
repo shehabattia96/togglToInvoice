@@ -93,8 +93,6 @@ if __name__ == "__main__":
     summedProjectDurationsInHours = summedProjectDurationsInSeconds
     for projectId in summedProjectDurationsInSeconds:
         summedProjectDurationsInHours[projectId] = utilities.secondsToHours(summedProjectDurationsInHours[projectId])
-        
-    print(clientProjectsDict, clientCompaniesDict)
 
     printDebug("Generating template for each client")
 
@@ -116,13 +114,20 @@ if __name__ == "__main__":
         )
 
         allProjects = [projectsDict[projectId] for projectId in clientProjects]
+        allInvoiceItems = []
+        for projectId in clientProjects:
+            allInvoiceItems += invoiceItemsDict[projectId]
 
         templateOutput = generateInvoiceTemplates.generateInvoiceFromHeaderAndItems(
             headerData=invoiceHeaderData,
             allProjects=allProjects,
             summedProjectDurationsInHours=summedProjectDurationsInHours
         )
-        print(templateOutput)
+        
+        templateOutput += generateInvoiceTemplates.generateInvoiceReportDetailsFromItems(
+            invoiceItems=allInvoiceItems,
+            allProjects=allProjects
+        )
 
         utilities.writeToFile(f"{clientId}_{startDateEpoch}_{endDateEpoch}.html", templateOutput)
 

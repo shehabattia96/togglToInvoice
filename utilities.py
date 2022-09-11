@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def isoDateStringToEpochSeconds(isoDateString):
     # references https://stackoverflow.com/a/59744630
@@ -16,6 +16,8 @@ def epochNowInSeconds():
     return int(datetime.now().timestamp())
 def secondsToHours(seconds):
     return round(seconds/3.6e3,2)
+def secondsToHoursMinutesSeconds(seconds):
+    return str(timedelta(seconds=seconds))
 
 # tech debt: this will only work for a single layer of obj nesting.
 class NestedObjectEncoder(json.JSONEncoder):
