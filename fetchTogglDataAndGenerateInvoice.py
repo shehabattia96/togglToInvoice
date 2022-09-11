@@ -3,6 +3,7 @@ import utilities
 import toggl
 import togglModels
 import models
+import generateInvoiceTemplates
 
 # CLI Args:
 # python fetchDataAndGenerateInvoice.py {isDebug} {configToggleApiPath} {configProjectsPath} {configClientCompaniesPath} {startDateEpoch} {endDateEpoch}
@@ -50,15 +51,25 @@ if __name__ == "__main__":
     # MARK: parse Projects from configProjectsPath:
     allProjects = utilities.readJsonFromFile(configProjectsPath)
 
-    projectDict = {}
+    projectsDict = {}
+    clientProjectsDict = {} # the key is a clientId
     invoiceItemsDict = {}
     summedProjectDurationsInSeconds = {} # toggl project's actual_hours does not count minutes, so we'll sum timeEntries' duration here
     
     for project in allProjects:
         project = models.Project(**allProjects[project])
-        projectDict[project.id] = project
+        projectsDict[project.id] = project
         invoiceItemsDict[project.id] = []
         summedProjectDurationsInSeconds[project.id] = 0
+
+        clientId = project.clientId or "Unknown"
+        if clientId not in clientCompaniesDict:
+            clientId = "Unknown"
+        
+        if clientId not in clientProjectsDict:
+            clientProjectsDict[clientId] = []
+
+        clientProjectsDict[clientId].append(project.id)
 
 
     # MARK: parse InvoiceItems from a toggl http request:
@@ -77,10 +88,44 @@ if __name__ == "__main__":
         invoiceItemsDict[invoiceItem.projectId].append(invoiceItem)
         summedProjectDurationsInSeconds[invoiceItem.projectId] += invoiceItem.durationInSeconds
 
-    print(utilities.objectToJson(clientCompaniesDict, prettify=True))
-    print(utilities.objectToJson(invoiceItemsDict, prettify=True))
-    print(utilities.objectToJson(summedProjectDurationsInSeconds, prettify=True))
 
-    printDebug("Generating template")
+
+    summedProjectDurationsInHours = summedProjectDurationsInSeconds
+    for projectId in summedProjectDurationsInSeconds:
+        summedProjectDurationsInHours[projectId] = utilities.secondsToHours(summedProjectDurationsInHours[projectId])
+        
+    print(clientProjectsDict, clientCompaniesDict)
+
+    printDebug("Generating template for each client")
+
+    for clientId in clientProjectsDict:
+        clientProjects = clientProjectsDict[clientId]
+        if clientId == "Unknown":
+            printDebug(f"Skipping projects with unknown client: {utilities.objectToJson(clientProjects)}")
+            continue
+
+        client:models.Company = clientCompaniesDict[clientId]
+
+        invoiceHeaderData = models.InvoiceHeaderData(
+            invoicePreparedOnDate=utilities.epochToMMDDYYYYString(utilities.epochNowInSeconds()),
+            invoiceNumber=1,
+            invoiceStartDate=utilities.epochToMMDDYYYYString(startDateEpoch),
+            invoiceEndDate=utilities.epochToMMDDYYYYString(endDateEpoch),
+            fromCompany=clientCompaniesDict["0"],
+            toCompany=client
+        )
+
+        allProjects = [projectsDict[projectId] for projectId in clientProjects]
+
+        templateOutput = generateInvoiceTemplates.generateInvoiceFromHeaderAndItems(
+            headerData=invoiceHeaderData,
+            allProjects=allProjects,
+            summedProjectDurationsInHours=summedProjectDurationsInHours
+        )
+        print(templateOutput)
+
+        utilities.writeToFile(f"{clientId}_{startDateEpoch}_{endDateEpoch}.html", templateOutput)
+
+
 
     

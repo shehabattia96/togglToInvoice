@@ -13,9 +13,9 @@ def epochToMMDDYYYYString(epochInSeconds):
 def epochToYYYY_MM_DDString(epochInSeconds):
     return datetime.fromtimestamp(epochInSeconds).strftime("%Y-%m-%d")
 def epochNowInSeconds():
-    return datetime.now().timestamp()
+    return int(datetime.now().timestamp())
 def secondsToHours(seconds):
-    return seconds/ 3.6e3
+    return round(seconds/3.6e3,2)
 
 # tech debt: this will only work for a single layer of obj nesting.
 class NestedObjectEncoder(json.JSONEncoder):
@@ -36,3 +36,9 @@ def readJsonFromFile(filePath:str):
     data = json.load(fileHandler)
     fileHandler.close()
     return data
+
+
+def writeToFile(fileName, data):
+    fileHandler = open(fileName, "w")
+    fileHandler.write(data)
+    fileHandler.close()

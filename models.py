@@ -7,11 +7,11 @@ class Project:
         hourlyRate,
         clientId
     ) -> None:
-        self.id = id
+        self.id = str(id)
         self.name = name
         self.billable = billable or True
         self.hourlyRate = hourlyRate or 0.0
-        self.clientId = clientId
+        self.clientId = str(clientId)
 
 
 class InvoiceItem:
@@ -25,8 +25,8 @@ class InvoiceItem:
         endTimeEpochInSeconds:int,
         durationInSeconds:int
     ):
-        self.id = id
-        self.projectId = projectId
+        self.id = str(id)
+        self.projectId = str(projectId)
         self.description = description
         self.billable = billable
         self.startTimeEpochInSeconds = startTimeEpochInSeconds
@@ -38,16 +38,20 @@ class Company:
     def __init__(
         self,
         clientId:str,
-        name:str,
+        clientName:str,
         address:str,
         cityCountryZipcode:str,
-        phoneNumber:str
+        phoneNumber:str,
+        projectName:str,
+        projectDescription:str,
     ):
-        self.clientId = clientId
-        self.name = name
+        self.clientId = str(clientId)
+        self.clientName = clientName
         self.address = address
         self.cityCountryZipcode = cityCountryZipcode
         self.phoneNumber = phoneNumber
+        self.projectName = projectName
+        self.projectDescription = projectDescription
 
 
 # Meta-data for the header of the invoice
@@ -58,8 +62,6 @@ class InvoiceHeaderData:
         invoiceNumber:str,
         invoiceStartDate:str,
         invoiceEndDate:str,
-        projectName:str,
-        projectDescription:str,
         fromCompany:Company,
         toCompany:Company
     ):
@@ -67,9 +69,6 @@ class InvoiceHeaderData:
         self.invoiceNumber = invoiceNumber
         self.invoiceStartDate = invoiceStartDate
         self.invoiceEndDate = invoiceEndDate
-
-        self.projectName = projectName
-        self.projectDescription = projectDescription
 
         self.fromCompany = fromCompany
         self.toCompany = toCompany

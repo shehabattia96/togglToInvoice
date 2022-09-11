@@ -4,23 +4,29 @@
 {
     "0": {
         "clientId": 0,
-        "name": "My Name",
+        "clientName": "My Name",
         "address": "",
         "cityCountryZipcode": "",
-        "phoneNumber": ""
+        "phoneNumber": "",
+        "projectName": "",
+        "projectDescription": ""
     },
     "client1Id": {
         "clientId": 1234,
-        "name": "Client 1 Name",
+        "clientName": "Client 1 Name",
         "address": "",
         "cityCountryZipcode": "",
-        "phoneNumber": ""
+        "phoneNumber": "",
+        "projectName": "Software Development",
+        "projectDescription": ""
     },    
     "client2Id": {
         "clientId": 1235,
-        "name": "Client 2 Name",
+        "clientName": "Client 2 Name",
         "address": "",
         "cityCountryZipcode": "",
-        "phoneNumber": ""
+        "phoneNumber": "",
+        "projectName": "Software Development",
+        "projectDescription": ""
     }
 }
