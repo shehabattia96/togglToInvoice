@@ -7,4 +7,4 @@ source "$SCRIPT_DIR/sourceEnvironment.sh"
 configToggleApiPath=$1
 
 # See "CLI Args" in generateProjectsJsonFromToggl.py for info on args:
-python "$SCRIPT_DIR/generateProjectsJsonFromToggl.py" ${configToggleApiPath:-configToggleApi.json}
+python "$SCRIPT_DIR/generateProjectsJsonFromToggl.py" "$@"

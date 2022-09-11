@@ -1,30 +1,48 @@
 import sys
+import argparse
 import utilities
 import toggl
 import togglModels
 import models
 import generateInvoiceTemplates
 
-# CLI Args:
-# python fetchDataAndGenerateInvoice.py {isDebug} {configToggleApiPath} {configProjectsPath} {configClientCompaniesPath} {startDateEpoch} {endDateEpoch}
-# isDebug: debug mode is ON if anything other than "0" or undefined is passed in.
-# configToggleApiPath: path to configToggleApi.json or similar
-# configProjectsPath: path to configProjects.json or similar
-# configClientCompaniesPath: path to configClientCompanies.json or similar
-# startDateEpoch: get toggl time entries starting this date
-# endDateEpoch: get toggl time entries up to (inclusive) this date
-#
-# for example:
-# python fetchDataAndGenerateInvoice.py 1 "configToggleApi.json" "configProjects.json" "configClientCompanies.json" 0 0
+parser=argparse.ArgumentParser()
 
-isDebug = sys.argv[1] != "0" if len(sys.argv) > 1 else False
-configToggleApiPath = sys.argv[2] if len(sys.argv) > 2 else "configToggleApi.json"
-configProjectsPath = sys.argv[3] if len(sys.argv) > 3 else "configProjects.json"
-configClientCompaniesPath = sys.argv[4] if len(sys.argv) > 4 else "configClientCompanies.json"
+# MARK: CLI Args:
+parser.add_argument("invoiceNumber", help="Invoice Number")
 epochNow = utilities.epochNowInSeconds()
-#Default to a week in the past
-startDateEpoch = int(sys.argv[5]) if len(sys.argv) > 5 and sys.argv[5] != "0" else epochNow - 60*60*24*7
-endDateEpoch = int(sys.argv[6]) if len(sys.argv) > 6 and sys.argv[6] != "0" else epochNow
+parser.add_argument("--invoicePreparedOnDate", help="The date to display in the invoice as the invoice date.", default=utilities.epochToMMDDYYYYString(epochNow))
+parser.add_argument("--startDateEpoch", help="Epoch to filter Toggl time entries' start date. Max 3 months. Defaults to 1 week ago.", default=epochNow - 60*60*24*7)
+parser.add_argument("--endDateEpoch", help="Epoch to filter Toggl time entries' end date. Max 3 months. Defaults to now.", default=epochNow)
+parser.add_argument("--isDebug", help="Displays debug messages.", default=False)
+parser.add_argument("--configToggleApiPath", help="Path to configToggleApi.json or similar", default="configToggleApi.json")
+parser.add_argument("--configProjectsPath", help="Path to configProjects.json or similar", default="configProjects.json")
+parser.add_argument("--configClientCompaniesPath", help="Path to configClientCompanies.json or similar", default="configClientCompanies.json")
+
+args=parser.parse_args().__dict__
+
+[
+    invoiceNumber,
+    invoicePreparedOnDate,
+    startDateEpoch,
+    endDateEpoch,
+    isDebug,
+    configToggleApiPath,
+    configProjectsPath,
+    configClientCompaniesPath
+] = [
+        args[key] for key in 
+            [
+                "invoiceNumber",
+                "invoicePreparedOnDate",
+                "startDateEpoch",
+                "endDateEpoch",
+                "isDebug",
+                "configToggleApiPath",
+                "configProjectsPath",
+                "configClientCompaniesPath"
+            ]
+]
 
 if isDebug:
     print("Debug mode on.")
@@ -105,8 +123,8 @@ if __name__ == "__main__":
         client:models.Company = clientCompaniesDict[clientId]
 
         invoiceHeaderData = models.InvoiceHeaderData(
-            invoicePreparedOnDate=utilities.epochToMMDDYYYYString(utilities.epochNowInSeconds()),
-            invoiceNumber=1,
+            invoicePreparedOnDate=invoicePreparedOnDate,
+            invoiceNumber=invoiceNumber,
             invoiceStartDate=utilities.epochToMMDDYYYYString(startDateEpoch),
             invoiceEndDate=utilities.epochToMMDDYYYYString(endDateEpoch),
             fromCompany=clientCompaniesDict["0"],
