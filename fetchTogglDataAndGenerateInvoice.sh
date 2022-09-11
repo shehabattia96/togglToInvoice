@@ -7,6 +7,8 @@ source "$SCRIPT_DIR/sourceEnvironment.sh"
 isDebug=$1
 configToggleApiPath=$2
 configProjectsPath=$3
+startDateEpoch=$4
+endDateEpoch=$5
 
 # See "CLI Args" in fetchTogglDataAndGenerateInvoice.py for info on args:
-python "$SCRIPT_DIR/fetchTogglDataAndGenerateInvoice.py" ${isDebug:-0} ${configToggleApiPath:-configToggleApi.json} ${configProjectsPath:-configProjects.json}
+python "$SCRIPT_DIR/fetchTogglDataAndGenerateInvoice.py" ${isDebug:-0} ${configToggleApiPath:-configToggleApi.json} ${configProjectsPath:-configProjects.json} ${startDateEpoch:-0} ${endDateEpoch:-0}

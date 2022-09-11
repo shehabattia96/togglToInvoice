@@ -1,25 +1,29 @@
 from models import InvoiceHeaderData, InvoiceItem, Project
-from utilities import objectToJson
+from utilities import objectToJson, secondsToHours
 
 project = Project(
-    "Toggl To Invoice",
-    100.0
+    id="0001",
+    name="Toggl To Invoice",
+    hourlyRate=100.0,
+    billable=True,
+    clientId=""
 )
 invoiceItem = InvoiceItem(
-    "0001",
-    project,
-    "Item 1",
-    "A test item",
-    1662836400,
-    1662838200
+    id="0001",
+    projectId=project.id,
+    description="A test item",
+    billable=False,
+    startTimeEpochInSeconds=1662836400,
+    endTimeEpochInSeconds=1662838200,
+    durationInSeconds=1662838200-1662836400
 )
 
 def testInvoiceItemDuration():
-    assert invoiceItem.durationInHours == 0.5, f"Expected 0.5, got {invoiceItem.durationInHours}"
+    assert secondsToHours(invoiceItem.durationInSeconds) == 0.5, f"Expected 0.5, got {invoiceItem.durationInHours}"
 
 def testInvoiceItemToJSON():
     invoiceItemJson = objectToJson(invoiceItem)
-    expectedJson = '{"id": "0001", "project": {"name": "Toggl To Invoice", "ratePerHour": 100.0}, "title": "Item 1", "description": "A test item", "startTimeEpochInSeconds": 1662836400, "endTimeEpochInSeconds": 1662838200}'
+    expectedJson = '{"id": "0001", "projectId": "0001", "description": "A test item", "billable": false, "startTimeEpochInSeconds": 1662836400, "endTimeEpochInSeconds": 1662838200, "durationInSeconds": 1800}'
     assert invoiceItemJson == expectedJson, f"""Expecting:
 {expectedJson}
 Got:

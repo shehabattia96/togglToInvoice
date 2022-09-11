@@ -1,3 +1,5 @@
+// This is a sample json
+// Please rename a copy of this to configToggleApi.json and update the apiToken field
 {
     "apiEndpoint": "https://api.track.toggl.com/api/v9/",
     "apiToken": "{TOKEN_HERE}"

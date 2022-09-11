@@ -1,10 +1,10 @@
 from utilities import *
 
-isoDate = "2022-09-10T15:30:00-04:00"
-expectedEpoch = 1662838200
-expectedMMDDYYYY = "09/10/2022"
+isoDate = "2022-06-20T18:56:34Z"
+expectedEpoch = 1655751394
+expectedMMDDYYYY = "06/20/2022"
 def test_isoDateToEpoch():
-    epoch = isoDateStringToEpoch(isoDate)
+    epoch = isoDateStringToEpochSeconds(isoDate)
     assert epoch == expectedEpoch, f"Expected {expectedEpoch}. Got {epoch}"
 def test_epochToIsoDate():
     isoDate = epochToIsoDateString(expectedEpoch)

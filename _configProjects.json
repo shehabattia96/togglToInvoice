@@ -1,1 +1,11 @@
-[]
+// This is a sample json
+// Run `generateProjectsJsonFromToggl.sh > configProjects.json` to fetch projects from Toggl
+{
+    "170841308": {
+        "id": 170841308,
+        "name": "projectName",
+        "billable": true,
+        "hourlyRate": 0.0,
+        "clientId": null
+    }
+}

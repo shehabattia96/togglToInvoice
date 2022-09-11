@@ -1,33 +1,37 @@
 class Project:
     def __init__(
         self,
-        name:str,
-        ratePerHour:float
-    ):
+        id,
+        name,
+        billable,
+        hourlyRate,
+        clientId
+    ) -> None:
+        self.id = id
         self.name = name
-        self.ratePerHour = ratePerHour
+        self.billable = billable or True
+        self.hourlyRate = hourlyRate or 0.0
+        self.clientId = clientId
 
 
 class InvoiceItem:
     def __init__(
         self,
         id:str,
-        project:Project,
-        title:str,
+        projectId:str,
         description:str,
+        billable:bool,
         startTimeEpochInSeconds:int,
-        endTimeEpochInSeconds:int
+        endTimeEpochInSeconds:int,
+        durationInSeconds:int
     ):
         self.id = id
-        self.project = project
-        self.title = title
+        self.projectId = projectId
         self.description = description
+        self.billable = billable
         self.startTimeEpochInSeconds = startTimeEpochInSeconds
         self.endTimeEpochInSeconds = endTimeEpochInSeconds
-
-    @property
-    def durationInHours(self):
-        return (self.endTimeEpochInSeconds - self.startTimeEpochInSeconds) / 3.6e3
+        self.durationInSeconds = durationInSeconds
 
 
 class Company:

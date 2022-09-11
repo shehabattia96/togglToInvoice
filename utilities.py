@@ -1,13 +1,21 @@
 import json
 from datetime import datetime
 
-def isoDateStringToEpoch(isoDateString):
+def isoDateStringToEpochSeconds(isoDateString):
+    # references https://stackoverflow.com/a/59744630
+    if isoDateString[-1].lower() == "z":
+        isoDateString = isoDateString[:-1] + '+00:00'
     return datetime.fromisoformat(isoDateString).timestamp()
-def epochToIsoDateString(epoch):
-    return datetime.fromtimestamp(epoch).isoformat()
-def epochToMMDDYYYYString(epoch):
-    return datetime.fromtimestamp(epoch).strftime("%m/%d/%Y")
-
+def epochToIsoDateString(epochInSeconds):
+    return datetime.fromtimestamp(epochInSeconds).isoformat()
+def epochToMMDDYYYYString(epochInSeconds):
+    return datetime.fromtimestamp(epochInSeconds).strftime("%m/%d/%Y")
+def epochToYYYY_MM_DDString(epochInSeconds):
+    return datetime.fromtimestamp(epochInSeconds).strftime("%Y-%m-%d")
+def epochNowInSeconds():
+    return datetime.now().timestamp()
+def secondsToHours(seconds):
+    return seconds/ 3.6e3
 
 # tech debt: this will only work for a single layer of obj nesting.
 class NestedObjectEncoder(json.JSONEncoder):
@@ -17,9 +25,8 @@ class NestedObjectEncoder(json.JSONEncoder):
         except:
             return obj.__dict__
 
-
-def objectToJson(object):
-    return json.dumps(object, cls=NestedObjectEncoder)
+def objectToJson(object, prettify=False):
+    return json.dumps(object, indent= 4 if prettify else None, cls=NestedObjectEncoder)
 
 def jsonToDict(jsonString:str):
     return json.loads(jsonString)
