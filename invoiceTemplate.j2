@@ -601,7 +601,7 @@
                 {% set sums.sumHours = sums.sumHours+summedProjectDurationsInHours[project.id] %}
                 {% set amount = project.hourlyRate*summedProjectDurationsInHours[project.id] %}
                 {% set sums.sumAmount = sums.sumAmount + amount %}
-                <td class="s21{{lightTheme}}" dir="ltr">${{amount}}</td>
+                <td class="s21{{lightTheme}}" dir="ltr">${{amount|round(2)}}</td>
             </tr>
             {% endfor %}
             <tr style="height: 31px">
@@ -611,7 +611,7 @@
                 <td class="s24" dir="ltr">Total Hours</td>
                 <td class="s25" dir="ltr">{{sums.sumHours}}</td>
                 <td class="s26" dir="ltr">Subtotal</td>
-                <td class="s27">${{sums.sumAmount}}</td>
+                <td class="s27">${{sums.sumAmount|round(2)}}</td>
             </tr>
             <tr style="height: 25px">
                 <td class="s0"></td>
@@ -626,7 +626,7 @@
                 <td class="s32"></td>
                 <td class="s32"></td>
                 <td class="s32"></td>
-                <td class="s33" colspan="2">${{sums.sumAmount}}</td>
+                <td class="s33" colspan="2">${{sums.sumAmount|round(2)}}</td>
             </tr>
             <tr style="height: 25px">
                 <td class="s3"></td>

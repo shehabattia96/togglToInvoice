@@ -13,4 +13,10 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 
 
-source "$VENV_DIR/Scripts/activate"
+SOURCE_DIR="$VENV_DIR/Scripts/activate"
+if [ ! -d "$SOURCE_DIR" ]; then
+    SOURCE_DIR="$VENV_DIR/bin/activate"
+fi
+
+
+source "$SOURCE_DIR"
