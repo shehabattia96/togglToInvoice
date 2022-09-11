@@ -1,4 +1,3 @@
-import sys
 import argparse
 import utilities
 import toggl
@@ -11,22 +10,25 @@ parser=argparse.ArgumentParser()
 # MARK: CLI Args:
 parser.add_argument("invoiceNumber", help="Invoice Number")
 epochNow = utilities.epochNowInSeconds()
-parser.add_argument("--invoicePreparedOnDate", help="The date to display in the invoice as the invoice date.", default=utilities.epochToMMDDYYYYString(epochNow))
-parser.add_argument("--startDateEpoch", help="Epoch to filter Toggl time entries' start date. Max 3 months. Defaults to 1 week ago.", default=epochNow - 60*60*24*7)
-parser.add_argument("--endDateEpoch", help="Epoch to filter Toggl time entries' end date. Max 3 months. Defaults to now.", default=epochNow)
-parser.add_argument("--isDebug", help="Displays debug messages.", default=False)
+parser.add_argument("--invoicePreparedOnDateEpoch", help="The date epoch to display in the invoice as the invoice date.", default=epochNow, type=int)
+parser.add_argument("--startDateEpoch", help="Epoch to filter Toggl time entries' start date. Max 3 months from endDateEpoch. Defaults to 1 week ago.", default=epochNow - 60*60*24*7, type=int)
+parser.add_argument("--endDateEpoch", help="Epoch to filter Toggl time entries' end date. Defaults to now.", default=epochNow, type=int)
+parser.add_argument("--hideProjectsWithNoHours", help="Projects that do not have hours are hidden.", default=False, action='store_true')
+parser.add_argument("--hideDebugMessages", help="Hides debug messages.", default=False, action='store_true')
 parser.add_argument("--configToggleApiPath", help="Path to configToggleApi.json or similar", default="configToggleApi.json")
 parser.add_argument("--configProjectsPath", help="Path to configProjects.json or similar", default="configProjects.json")
 parser.add_argument("--configClientCompaniesPath", help="Path to configClientCompanies.json or similar", default="configClientCompanies.json")
 
 args=parser.parse_args().__dict__
 
+# This is a landmine waiting to explode. Make sure to match the key unpacking order:
 [
     invoiceNumber,
-    invoicePreparedOnDate,
+    invoicePreparedOnDateEpoch,
     startDateEpoch,
     endDateEpoch,
-    isDebug,
+    hideProjectsWithNoHours,
+    hideDebugMessages,
     configToggleApiPath,
     configProjectsPath,
     configClientCompaniesPath
@@ -34,21 +36,22 @@ args=parser.parse_args().__dict__
         args[key] for key in 
             [
                 "invoiceNumber",
-                "invoicePreparedOnDate",
+                "invoicePreparedOnDateEpoch",
                 "startDateEpoch",
                 "endDateEpoch",
-                "isDebug",
+                "hideProjectsWithNoHours",
+                "hideDebugMessages",
                 "configToggleApiPath",
                 "configProjectsPath",
                 "configClientCompaniesPath"
             ]
 ]
 
-if isDebug:
+if not hideDebugMessages:
     print("Debug mode on.")
 
 def printDebug(message):
-    if isDebug:
+    if not hideDebugMessages:
         print(message)
 
 if __name__ == "__main__":
@@ -107,34 +110,48 @@ if __name__ == "__main__":
         summedProjectDurationsInSeconds[invoiceItem.projectId] += invoiceItem.durationInSeconds
 
 
-
     summedProjectDurationsInHours = summedProjectDurationsInSeconds
     for projectId in summedProjectDurationsInSeconds:
         summedProjectDurationsInHours[projectId] = utilities.secondsToHours(summedProjectDurationsInHours[projectId])
 
-    printDebug("Generating template for each client")
+    printDebug("Generating an invoice for each client")
+
+    fromCompany = clientCompaniesDict["0"]
+
+    assert fromCompany, f"Client with clientId == 0 not found. Please add your name/company to {configClientCompaniesPath}."
 
     for clientId in clientProjectsDict:
         clientProjects = clientProjectsDict[clientId]
         if clientId == "Unknown":
             printDebug(f"Skipping projects with unknown client: {utilities.objectToJson(clientProjects)}")
             continue
-
+        
         client:models.Company = clientCompaniesDict[clientId]
 
+        outputFileName = f"Invoice #{invoiceNumber} - {utilities.epochToBDDYYYYString(invoicePreparedOnDateEpoch)} - {client.clientName} - {fromCompany.clientName}.html"
+        
+        printDebug(f"Generating {outputFileName}")
+
+
         invoiceHeaderData = models.InvoiceHeaderData(
-            invoicePreparedOnDate=invoicePreparedOnDate,
+            invoicePreparedOnDate=utilities.epochToMMDDYYYYString(invoicePreparedOnDateEpoch),
             invoiceNumber=invoiceNumber,
             invoiceStartDate=utilities.epochToMMDDYYYYString(startDateEpoch),
             invoiceEndDate=utilities.epochToMMDDYYYYString(endDateEpoch),
-            fromCompany=clientCompaniesDict["0"],
+            fromCompany=fromCompany,
             toCompany=client
         )
 
-        allProjects = [projectsDict[projectId] for projectId in clientProjects]
+        allProjects = []
         allInvoiceItems = []
         for projectId in clientProjects:
             allInvoiceItems += invoiceItemsDict[projectId]
+
+            if hideProjectsWithNoHours:
+                if summedProjectDurationsInSeconds[projectId] == 0:
+                    continue
+
+            allProjects.append(projectsDict[projectId])
 
         templateOutput = generateInvoiceTemplates.generateInvoiceFromHeaderAndItems(
             headerData=invoiceHeaderData,
@@ -147,7 +164,7 @@ if __name__ == "__main__":
             allProjects=allProjects
         )
 
-        utilities.writeToFile(f"{clientId}_{startDateEpoch}_{endDateEpoch}.html", templateOutput)
+        utilities.writeToFile(outputFileName, templateOutput)
 
 
 

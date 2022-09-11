@@ -10,6 +10,8 @@ def epochToIsoDateString(epochInSeconds):
     return datetime.fromtimestamp(epochInSeconds).isoformat()
 def epochToMMDDYYYYString(epochInSeconds):
     return datetime.fromtimestamp(epochInSeconds).strftime("%m/%d/%Y")
+def epochToBDDYYYYString(epochInSeconds):
+    return datetime.fromtimestamp(epochInSeconds).strftime("%b %d %Y")
 def epochToYYYY_MM_DDString(epochInSeconds):
     return datetime.fromtimestamp(epochInSeconds).strftime("%Y-%m-%d")
 def epochNowInSeconds():
