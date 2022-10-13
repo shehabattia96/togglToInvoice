@@ -97,7 +97,8 @@ if __name__ == "__main__":
     allTimeEntries = toggl.getAllTimeEntries(
         apiEndpoint=configToggleApi["apiEndpoint"],
         startDateEpoch=startDateEpoch,
-        endDateEpoch=endDateEpoch,
+        # toggl api only works with dates, so to get entries on the day of the epoch, you need to go a day in the future. We'll filter excess entries later:
+        endDateEpoch=endDateEpoch+24*60*60,
         requestHeader=toggl.generateRequestHeader(apiToken=configToggleApi["apiToken"])
     )
     
@@ -106,13 +107,12 @@ if __name__ == "__main__":
 
         assert invoiceItem.projectId in invoiceItemsDict, f"Could not find project with id {invoiceItem.projectId} for timeEntry {invoiceItem.id}:{invoiceItem.description}"
 
+        if invoiceItem.startTimeEpochInSeconds > endDateEpoch:
+            print(f"Entry {invoiceItem.id} is after the endDateEpoch, skipping it.")
+            continue
+
         invoiceItemsDict[invoiceItem.projectId].append(invoiceItem)
         summedProjectDurationsInSeconds[invoiceItem.projectId] += invoiceItem.durationInSeconds
-
-
-    summedProjectDurationsInHours = summedProjectDurationsInSeconds
-    for projectId in summedProjectDurationsInSeconds:
-        summedProjectDurationsInHours[projectId] = utilities.secondsToHours(summedProjectDurationsInHours[projectId])
 
     printDebug("Generating an invoice for each client")
 
@@ -131,7 +131,6 @@ if __name__ == "__main__":
         outputFileName = f"Invoice #{invoiceNumber} - {utilities.epochToBDDYYYYString(invoicePreparedOnDateEpoch)} - {client.clientName} - {fromCompany.clientName}.html"
         
         printDebug(f"Generating {outputFileName}")
-
 
         invoiceHeaderData = models.InvoiceHeaderData(
             invoicePreparedOnDate=utilities.epochToMMDDYYYYString(invoicePreparedOnDateEpoch),
@@ -156,7 +155,7 @@ if __name__ == "__main__":
         templateOutput = generateInvoiceTemplates.generateInvoiceFromHeaderAndItems(
             headerData=invoiceHeaderData,
             allProjects=allProjects,
-            summedProjectDurationsInHours=summedProjectDurationsInHours
+            summedProjectDurationsInSeconds=summedProjectDurationsInSeconds
         )
         
         templateOutput += generateInvoiceTemplates.generateInvoiceReportDetailsFromItems(

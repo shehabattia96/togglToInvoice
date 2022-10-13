@@ -19,7 +19,13 @@ def epochNowInSeconds():
 def secondsToHours(seconds):
     return round(seconds/3.6e3,2)
 def secondsToHoursMinutesSeconds(seconds):
-    return str(timedelta(seconds=seconds))
+    return format_timedelta(timedelta(seconds=seconds))
+
+# references https://stackoverflow.com/a/28503916/9824103
+def format_timedelta(td:timedelta):
+    minutes, seconds = divmod(td.seconds + td.days * 86400, 60)
+    hours, minutes = divmod(minutes, 60)
+    return '{:d}:{:02d}:{:02d}'.format(hours, minutes, seconds)
 
 # tech debt: this will only work for a single layer of obj nesting.
 class NestedObjectEncoder(json.JSONEncoder):

@@ -9,6 +9,7 @@ def generateRequestHeader(apiToken:str):
     return {'content-type': 'application/json', 'Authorization' : 'Basic %s' %  b64encode(f"{apiToken}:api_token".encode("ascii")).decode("ascii")}
 
 def _makeRequestReturnJsonDict(url:str, requestHeader:dict):
+    print(url, requestHeader)
     req = Request(url)
     for header in requestHeader:
         req.add_header(header, requestHeader[header])

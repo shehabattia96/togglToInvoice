@@ -586,19 +586,19 @@
                 <td class="s17" dir="ltr"></td>
                 <td class="s18" dir="ltr">Hours</td>
                 <td class="s18" dir="ltr">Rate</td>
-                <td class="s18" dir="ltr">Total price</td>
+                <td class="s18" dir="ltr">Total</td>
             </tr>
             {% set sums = namespace(items=0) %}
-            {% set sums.sumHours = 0 %}
+            {% set sums.sumSeconds = 0 %}
             {% set sums.sumAmount = 0 %}
             {% for project in allProjects %}
             {% set lightTheme = ('_light' if loop.index is divisibleby(2) else '') %}
             <tr style="height: 25px">
                 <td class="s6"></td>
                 <td class="s19{{lightTheme}}" dir="ltr" colspan="3">{{project.name}}</td>
-                <td class="s20{{lightTheme}}" dir="ltr">{{summedProjectDurationsInHours[project.id]}}</td>
+                <td class="s20{{lightTheme}}" dir="ltr">{{secondsToHoursMinutesSeconds(summedProjectDurationsInSeconds[project.id])}}</td>
                 <td class="s20{{lightTheme}}" dir="ltr">${{project.hourlyRate}}</td>
-                {% set sums.sumHours = sums.sumHours+summedProjectDurationsInHours[project.id] %}
+                {% set sums.sumSeconds = sums.sumSeconds+summedProjectDurationsInSeconds[project.id] %}
                 {% set amount = project.hourlyRate*summedProjectDurationsInHours[project.id] %}
                 {% set sums.sumAmount = sums.sumAmount + amount %}
                 <td class="s21{{lightTheme}}" dir="ltr">${{amount|round(2)}}</td>
@@ -609,7 +609,7 @@
                 <td class="s22" dir="ltr"></td>
                 <td class="s23" dir="ltr"></td>
                 <td class="s24" dir="ltr">Total Hours</td>
-                <td class="s25" dir="ltr">{{sums.sumHours}}</td>
+                <td class="s25" dir="ltr">{{secondsToHoursMinutesSeconds(sums.sumSeconds)}}</td>
                 <td class="s26" dir="ltr">Subtotal</td>
                 <td class="s27">${{sums.sumAmount|round(2)}}</td>
             </tr>

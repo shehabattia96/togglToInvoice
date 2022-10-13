@@ -10,11 +10,20 @@ env = Environment(
 invoiceTemplate = env.get_template("invoiceTemplate.j2")
 invoiceItemsTemplate = env.get_template("invoiceItemsTemplate.j2")
 
-def generateInvoiceFromHeaderAndItems(headerData:InvoiceHeaderData, allProjects:list, summedProjectDurationsInHours):
+def generateInvoiceFromHeaderAndItems(headerData:InvoiceHeaderData, allProjects:list, summedProjectDurationsInSeconds):
+
+
+    summedProjectDurationsInHours = {}
+    for projectId in summedProjectDurationsInSeconds:
+        summedProjectDurationsInHours[projectId] = secondsToHours(summedProjectDurationsInSeconds[projectId])
+
+
     return invoiceTemplate.render(
         headerData=headerData,
         allProjects=allProjects,
-        summedProjectDurationsInHours=summedProjectDurationsInHours
+        summedProjectDurationsInSeconds=summedProjectDurationsInSeconds,
+        summedProjectDurationsInHours=summedProjectDurationsInHours,
+        secondsToHoursMinutesSeconds=secondsToHoursMinutesSeconds
     )
 
 def generateInvoiceReportDetailsFromItems(invoiceItems:list, allProjects:list):
