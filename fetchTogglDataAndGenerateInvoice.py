@@ -107,6 +107,10 @@ if __name__ == "__main__":
 
         assert invoiceItem.projectId in invoiceItemsDict, f"Could not find project with id {invoiceItem.projectId} for timeEntry {invoiceItem.id}:{invoiceItem.description}"
 
+        if invoiceItem.startTimeEpochInSeconds < startDateEpoch:
+            print(f"Entry {invoiceItem.id} is before the startDateEpoch, skipping it.")
+            continue
+
         if invoiceItem.startTimeEpochInSeconds > endDateEpoch:
             print(f"Entry {invoiceItem.id} is after the endDateEpoch, skipping it.")
             continue
